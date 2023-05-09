@@ -12,8 +12,8 @@ const CarritoSchema = new Schema({
   },
 });
 
-CarritoSchema.pre('findOne', function(){
-    this.populate('productos.product')
-})
+CarritoSchema.pre("findOne", function () {
+  this.populate("productos.product");
+});
 
 module.exports = model(collection, CarritoSchema);

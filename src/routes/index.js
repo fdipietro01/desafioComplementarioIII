@@ -11,7 +11,7 @@ const router = Router();
 router.use("/api/products", routerProductos);
 router.use("/api/carts", routerCarritos);
 router.use("/api/orders", routerOrdenes);
-router.use("/api/usuarios", routerUsuarios);
+router.use("/api/users", routerUsuarios);
 router.use("/sessions", sessionsRouter);
 router.use("/api/mail", mailRouter);
 

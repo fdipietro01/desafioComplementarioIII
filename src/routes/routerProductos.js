@@ -25,7 +25,7 @@ routerProductos.put(
 routerProductos.delete(
   "/:pid",
   passportAutenticate("current"),
-  passportAuthorize("admin"),
+  passportAuthorize("Admin"),
   productController.deleteProduct
 );
 

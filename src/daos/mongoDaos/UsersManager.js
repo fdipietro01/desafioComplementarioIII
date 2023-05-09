@@ -1,4 +1,5 @@
 const userModel = require("../../models/userSchema");
+const { Types } = require("mongoose");
 
 class UserManager {
   constructor() {
@@ -24,13 +25,37 @@ class UserManager {
   }
   async createUser(user) {
     try {
-      const a = await this.model.create(user);
+      await this.model.create(user);
     } catch (err) {
       throw new Error("Error al crear usuario", err);
     }
   }
   async updateUser(email, password) {
-    await this.model.findOneAndUpdate({ email }, { password });
+    try {
+      await this.model.findOneAndUpdate({ email }, { password });
+    } catch (err) {
+      throw new Error("Error al actualizar credenciales de usuario", err);
+    }
+  }
+
+  async updateUserCart(id, cid) {
+    try {
+      return await this.model.findOneAndUpdate(
+        { _id: new Types.ObjectId(id) },
+        { carrito: new Types.ObjectId(cid) },
+        { new: true }
+      );
+    } catch (err) {
+      throw new Error("Error al actualizar carrito de usuario", err);
+    }
+  }
+
+  async deleteUser(id) {
+    try {
+      await this.model.findByIdAndDelete(new Types.ObjectId(id));
+    } catch (err) {
+      throw new Error("Error al eliminar usuario", err);
+    }
   }
 }
 

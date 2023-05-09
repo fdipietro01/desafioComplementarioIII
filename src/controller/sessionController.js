@@ -11,20 +11,26 @@ const {
 
 class SessionControler {
   async login(req, res) {
-    const { email, password } = req.body;
-    const dbUser = await Session.getUser(email);
-    if (dbUser === null || dbUser === undefined)
-      return res.status(400).send({ message: "No existe el usuario" });
-    if (!validatePassword(dbUser, password))
-      return res.status(400).send({ message: "Password Incorrecta" });
-    const user = { ...new LoginUserDto(dbUser) };
+    try {
+      const { email, password } = req.body;
+      const dbUser = await Session.getUser(email);
+      if (dbUser === null || dbUser === undefined)
+        return res.status(400).send({ message: "No existe el usuario" });
+      if (!validatePassword(dbUser, password))
+        return res.status(400).send({ message: "Password Incorrecta" });
+      const user = { ...new LoginUserDto(dbUser) };
 
-    const token = generateToken(user);
-    res.cookie("token", token, {
-      maxAge: 60 * 60 * 1000,
-      httpOnly: true,
-    });
-    res.status(200).send({ message: "Logueado exitosamente", user, token });
+      const token = generateToken(user);
+      res.cookie("token", token, {
+        maxAge: 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      if (!token) res.status(400).send({ message: "Error al loguear" });
+
+      res.status(200).send({ message: "Logueado exitosamente", user, token });
+    } catch (err) {
+      res.status(400).send({ message: "Error al loguear" });
+    }
   }
 
   async register(req, res) {

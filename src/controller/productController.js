@@ -35,12 +35,9 @@ class ProductController {
     if (req.body.status === undefined) req.body.status = true;
     try {
       await Product.addProduct(producto);
-      res
-        .status(200)
-        .json({ redirectUrl: `http://localhost:${port}/productos/` });
+      res.status(200).send({ status: "succes" });
     } catch (err) {
       res.status(400).json({
-        redirectUrl: `http://localhost:${port}/alerts`,
         message: err.message,
       });
     }
@@ -54,26 +51,21 @@ class ProductController {
       await Product.updateProduct(pid, newProd);
       res.status(200).json({ actualizado: "success" });
     } catch (err) {
-      res.status(400).send(err.message);
+      res.status(400).json(err.message);
     }
   }
   async deleteProduct(req, res) {
     const { pid } = req.params;
     try {
       const deleted = await Product.deleteProduct(pid);
-      if (deleted !== 0)
-        res
-          .status(200)
-          .json({ redirectUrl: `http://localhost:${port}/productos` });
+      if (deleted !== 0) res.status(200).json({ status: "succes" });
       else
         res.status(400).json({
-          redirectUrl: `http://localhost:${port}/alerts`,
           message: "Error al eliminar producto",
         });
     } catch (err) {
       console.log(err.message);
       res.status(400).json({
-        redirectUrl: `http://localhost:${port}/alerts`,
         message: "Error al eliminar producto",
       });
     }

@@ -38,7 +38,7 @@ const userSchema = Schema({
     type: String,
     required: true,
   },
-  cart: { type: Schema.Types.ObjectId, ref: "carritos" },
+  carrito: { type: Schema.Types.ObjectId, ref: "carritos" },
 });
 
 userSchema.plugin(mongoosePaginate);

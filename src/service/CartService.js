@@ -3,13 +3,22 @@ class CartService {
     this.dao = dao;
   }
 
+  async addCart() {
+    const result = await this.dao.addCart();
+    return result;
+  }
+
   async getCartProducts(cid) {
     const result = await this.dao.getCartProducts(cid);
     return result;
   }
 
   async updateProductQuantityFromCart(cid, pid, quantity) {
-    const result = await this.updateProductQuantityFromCart(cid, pid, quantity);
+    const result = await this.dao.updateProductQuantityFromCart(
+      cid,
+      pid,
+      quantity
+    );
     return result;
   }
 
@@ -19,12 +28,12 @@ class CartService {
   }
 
   async deleteSingleProductFromCart(cid, pid) {
-    const result = await this.deleteSingleProductFromCart(cid, pid);
+    const result = await this.dao.deleteSingleProductFromCart(cid, pid);
     return result;
   }
 
   async deleteAllProductsFromCart(cid) {
-    const result = deleteAllProductsFromCart(cid);
+    const result = await this.dao.deleteAllProductsFromCart(cid);
     return result;
   }
 }

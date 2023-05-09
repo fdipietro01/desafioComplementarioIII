@@ -21,7 +21,7 @@ class UsersManager {
     }
   };
 
-  async getSingleUser(email) {
+  async getUser(email) {
     const data = await this.getAllUsers();
     const find = data.find((usr) => usr.email === email);
     const idx = data.findIndex((usr) => usr.email === email);
@@ -34,6 +34,22 @@ class UsersManager {
       const { find, idx } = await this.getSingleUser(email);
       if (find) {
         find.password = password;
+        users[idx] = find;
+        await fs.promises.writeFile(this.path, JSON.stringify(users), "utf-8");
+        return { updated: find };
+      }
+      return { updated: "not found" };
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  };
+
+  updateUserCart = async (email, carrito) => {
+    try {
+      const users = await this.getAllUsers();
+      const { find, idx } = await this.getSingleUser(email);
+      if (find) {
+        find.carrito = carrito;
         users[idx] = find;
         await fs.promises.writeFile(this.path, JSON.stringify(users), "utf-8");
         return { updated: find };

@@ -8,6 +8,7 @@ class CurrentUserDto {
     this.avatar = user.avatar;
     this.role = user.role;
     this.fecha = user.fecha;
+    this.carrito = user.carrito;
   }
 }
 

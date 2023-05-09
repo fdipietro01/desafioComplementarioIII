@@ -8,8 +8,13 @@ const routerUsuarios = Router();
 routerUsuarios.get(
   "/",
   passportAutenticate("current"),
-  autorization("admin"),
   usersController.getUsers
+);
+
+routerUsuarios.put(
+  "/:uid/:cid",
+  passportAutenticate("current"),
+  usersController.updateUserCart
 );
 
 module.exports = routerUsuarios;

@@ -22,10 +22,13 @@ class CartMaganer {
       let products;
       if (carrito.productos.length === 0) products = [];
       else {
-        products = carrito.productos.map(({ product, quantity }) => {
-          const newProd = { ...product, _id: product._id.toString(), quantity };
-          return newProd;
-        });
+        products = carrito.productos.map(({ product, quantity }) => ({
+          item: {
+            ...product,
+            _id: product._id.toString(),
+          },
+          quantity,
+        }));
       }
       return products;
     } catch (err) {
@@ -34,19 +37,26 @@ class CartMaganer {
     }
   };
 
-  updateProductQuantityFromCart = async (cid, pid, quantity) => {
+  updateProductQuantityFromCart = async (cid, pid, newQuantity) => {
     try {
-      const cart = await this.model.findOne({ _id: cid });
+      const parsedId = new Types.ObjectId(cid);
+      const cart = await this.model.findOne({ _id: parsedId }).lean();
 
       const index = cart.productos.findIndex(
         (obj) => obj.product._id.toString() === pid
       );
       if (index !== -1) {
-        cart.productos[index].quantity = quantity;
+        cart.productos[index].quantity += newQuantity;
       } else {
-        cart.productos.push({ product: pid, quantity });
+        cart.productos.push({
+          product: new Types.ObjectId(pid),
+          quantity: newQuantity,
+        });
       }
-      await this.model.findByIdAndUpdate({ _id: cid }, cart);
+      await this.model.findByIdAndUpdate(
+        { _id: new Types.ObjectId(cid) },
+        cart
+      );
     } catch (err) {
       console.log(err);
       throw new Error("Error al actualizar cantidad en productos", err.message);
@@ -67,11 +77,14 @@ class CartMaganer {
 
   deleteSingleProductFromCart = async (cid, pid) => {
     try {
-      const cart = await this.model.findOne({ _id: cid });
+      const cart = await this.model.findOne({ _id: new Types.ObjectId(cid) });
       cart.productos = cart.productos.filter(
         (prod) => prod.product._id.toString() !== pid
       );
-      await this.model.findByIdAndUpdate({ _id: cid }, cart);
+      await this.model.findByIdAndUpdate(
+        { _id: new Types.ObjectId(cid) },
+        cart
+      );
     } catch (err) {
       console.log(err);
       throw new Error("Error al eleminar producto en carrito", err.message);
@@ -80,7 +93,10 @@ class CartMaganer {
 
   deleteAllProductsFromCart = async (cid) => {
     try {
-      await this.model.findByIdAndUpdate({ _id: cid }, { productos: [] });
+      await this.model.findByIdAndUpdate(
+        { _id: new Types.ObjectId(cid) },
+        { productos: [] }
+      );
     } catch (err) {
       console.log(err);
       throw new Error("Error al eliminar productos en carrito", err.message);
