@@ -1,4 +1,4 @@
-const userModel = require("../../models/userSchema");
+const userModel = require("../../models/userModel");
 const { Types } = require("mongoose");
 
 class UserManager {
@@ -55,6 +55,17 @@ class UserManager {
       await this.model.findByIdAndDelete(new Types.ObjectId(id));
     } catch (err) {
       throw new Error("Error al eliminar usuario", err);
+    }
+  }
+
+  async updateUserTicket(uid, tid) {
+    try {
+      await this.model.findOneAndUpdate(
+        { _id: new Types.ObjectId(uid) },
+        { ticket: new Types.ObjectId(tid) }
+      );
+    } catch (err) {
+      throw new Error("Error el ticked del usuario", err);
     }
   }
 }

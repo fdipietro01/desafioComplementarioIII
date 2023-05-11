@@ -6,7 +6,6 @@ const autorization = (role) => async (req, res, next) => {
       .status(403)
       .send({ message: "No tiene permisos para esta acción" });
   }
-  console.log("autorice");
   next();
 };
 

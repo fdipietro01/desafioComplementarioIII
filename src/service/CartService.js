@@ -23,7 +23,7 @@ class CartService {
   }
 
   async updateProductsFromCart(cid, productos) {
-    const result = await updateProductsFromCart(cid, productos);
+    const result = await this.dao.updateProductsFromCart(cid, productos);
     return result;
   }
 

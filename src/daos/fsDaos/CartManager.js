@@ -105,5 +105,7 @@ class CartMaganer {
       throw new Error(err.message);
     }
   };
+
+  purchase(cid) {}
 }
 module.exports = CartMaganer;

@@ -60,6 +60,22 @@ class UsersManager {
     }
   };
 
+  updateUserticket = async (email, ticket) => {
+    try {
+      const users = await this.getAllUsers();
+      const { find, idx } = await this.getSingleUser(email);
+      if (find) {
+        find.ticket = ticket;
+        users[idx] = find;
+        await fs.promises.writeFile(this.path, JSON.stringify(users), "utf-8");
+        return { updated: find };
+      }
+      return { updated: "not found" };
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  };
+
   deleteUser = async (id) => {
     try {
       if (find) {

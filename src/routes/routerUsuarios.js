@@ -17,4 +17,10 @@ routerUsuarios.put(
   usersController.updateUserCart
 );
 
+routerUsuarios.put(
+  "/:uid/:tid",
+  passportAutenticate("current"),
+  usersController.updateUserCart
+);
+
 module.exports = routerUsuarios;

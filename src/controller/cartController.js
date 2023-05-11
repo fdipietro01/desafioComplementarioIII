@@ -1,4 +1,4 @@
-const { Cart, Product } = require("../service/index");
+const { Cart, Product, Ticket, User } = require("../service/index");
 
 class CartController {
   async crearCarrito(req, res) {
@@ -40,6 +40,75 @@ class CartController {
     try {
       await Cart.deleteSingleProductFromCart(cid, pid);
       res.status(200).send({ status: "success" });
+    } catch (err) {
+      res.status(400).send({ error: err.message });
+    }
+  }
+
+  async purchase(req, res) {
+    const { cid } = req.params;
+    const { email } = req.body;
+
+    try {
+      const cart = await Cart.getCartProducts(cid);
+      let totalAmount = 0;
+      let productsPurchase = [];
+      let updatedStockProducts = [];
+      let productsOutOfStock = [];
+
+      //filtra los productos que están en el carrito de la db para tener los originales con el valor del stock
+      const productsInCartWithStockPromise = cart.map(
+        async (item) => await Product.getProductById(item.item._id)
+      );
+      const productsInCartWithStock = await Promise.all(
+        productsInCartWithStockPromise
+      );
+      //filtra por productos fuera de stock y los que si tienen
+      cart.forEach(({ item, quantity }) => {
+        const itemInDb = productsInCartWithStock.find(
+          (prod) => prod._id.toString() === item._id.toString()
+        );
+        if (quantity <= itemInDb.stock) {
+          itemInDb.stock = itemInDb.stock - quantity;
+          updatedStockProducts.push(itemInDb);
+          productsPurchase.push({ product: itemInDb._id, quantity });
+          totalAmount += item.price * quantity;
+        } else {
+          productsOutOfStock.push({ product: itemInDb._id, quantity });
+        }
+      });
+
+      //crea el ticket si hay productos por comprar
+      if (productsPurchase.length > 0) {
+        const code = Math.random().toString(36).slice(2);
+        const date = Date.now();
+
+        const response = await Ticket.createPurchase(
+          code,
+          date,
+          totalAmount,
+          email,
+          productsPurchase,
+          productsOutOfStock
+        );
+        //actualiza el carrito guardando ahora los productos no comprados
+        await Cart.updateProductsFromCart(cid, productsOutOfStock);
+        //actualiza el stock de los productos comprados
+        updatedStockProducts.forEach(async (item) => {
+          await Product.updateProduct(item._id, item);
+        });
+        //actualiza al usuario para vincularle el ticket
+        const userId = req.user._id;
+        await User.updateUserTicket(userId, response._id);
+        return response
+          ? res.status(200).send({ status: "success", data: response })
+          : res.status(500).send({ status: "error", data: response });
+      } else {
+        return res.status(400).send({
+          status: "error",
+          message: "No hay stock alguno para procesar la compra",
+        });
+      }
     } catch (err) {
       res.status(400).send({ error: err.message });
     }

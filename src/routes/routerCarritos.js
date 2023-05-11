@@ -32,6 +32,12 @@ carritoRouter.delete(
   cartController.deleteCart
 );
 
+carritoRouter.post(
+  "/:cid/purchase",
+  passportAutenticate("current"),
+  passportAuthorize("User"),
+  cartController.purchase
+);
 carritoRouter.delete(
   "/:cid/:pid",
   passportAutenticate("current"),

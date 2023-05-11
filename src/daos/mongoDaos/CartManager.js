@@ -1,5 +1,6 @@
 const { Types } = require("mongoose");
 const cartModel = require("../../models/carritoModel");
+const ticketModel = require("../../models/ticketModel");
 
 class CartMaganer {
   constructor() {
@@ -64,9 +65,6 @@ class CartMaganer {
   };
 
   updateProductsFromCart = async (cid, productos) => {
-    productos.forEach((element) => {
-      element.product = Types.ObjectId(element.product);
-    });
     try {
       await this.model.findOneAndUpdate({ _id: cid }, { productos });
     } catch (err) {

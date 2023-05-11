@@ -3,24 +3,28 @@ class UserService {
     this.dao = dao;
   }
   async getAllUsers() {
-    const usuarios = await this.dao.getAllUsers();
-    return usuarios;
+    const usuario = await this.dao.getAllUsers();
+    return usuario;
   }
   async getUser(email) {
-    const usuarios = await this.dao.getSingleUser(email);
-    return usuarios;
+    const usuario = await this.dao.getSingleUser(email);
+    return usuario;
   }
   async createUser(user) {
-    const usuarios = await this.dao.createUser(user);
-    return usuarios;
+    const usuario = await this.dao.createUser(user);
+    return usuario;
   }
   async updateUser(email, password) {
-    const usuarios = await this.dao.updateUser(email, password);
-    return usuarios;
+    const usuario = await this.dao.updateUser(email, password);
+    return usuario;
   }
   async updateUserCart(id, cid) {
-    const usuarios = await this.dao.updateUserCart(id, cid);
-    return usuarios;
+    const usuario = await this.dao.updateUserCart(id, cid);
+    return usuario;
+  }
+  async updateUserTicket(uid, tid) {
+    const usuario = await this.dao.updateUserTicket(uid, tid);
+    return usuario;
   }
 }
 

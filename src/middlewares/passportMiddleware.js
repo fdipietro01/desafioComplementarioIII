@@ -7,13 +7,6 @@ const ExtractJWT = ExtractJwt;
 const cookieField = process.env.COOKIE_FIELD;
 
 const cookieExtractor = (req) => {
-  // let token = null;
-  // console.log("algooo");
-  // console.log(req.cookies, "qk");
-  // if (req && req.headers.authorization) {
-  //   token = req.headers.authorization.split(" ")[1];
-  // }
-  // return token;
   let token = null;
   if (req && req.cookies) {
     token = req.cookies[cookieField];
