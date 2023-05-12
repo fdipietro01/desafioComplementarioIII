@@ -55,6 +55,7 @@ class CartController {
       let productsPurchase = [];
       let updatedStockProducts = [];
       let productsOutOfStock = [];
+      let remainingProducts = [];
 
       //filtra los productos que están en el carrito de la db para tener los originales con el valor del stock
       const productsInCartWithStockPromise = cart.map(
@@ -70,11 +71,12 @@ class CartController {
         );
         if (quantity <= itemInDb.stock) {
           itemInDb.stock = itemInDb.stock - quantity;
-          updatedStockProducts.push(itemInDb);
+          updatedStockProducts.push({ item: itemInDb, quantity });
           productsPurchase.push({ product: itemInDb._id, quantity });
           totalAmount += item.price * quantity;
         } else {
           productsOutOfStock.push({ product: itemInDb._id, quantity });
+          remainingProducts.push({ item, quantity });
         }
       });
 
@@ -92,21 +94,30 @@ class CartController {
           productsOutOfStock
         );
         //actualiza el carrito guardando ahora los productos no comprados
-        await Cart.updateProductsFromCart(cid, productsOutOfStock);
+        await Cart.updateProductsFromCart(cid, productsOutOfStock.length ?? []);
         //actualiza el stock de los productos comprados
-        updatedStockProducts.forEach(async (item) => {
+        updatedStockProducts.forEach(async ({ item }) => {
           await Product.updateProduct(item._id, item);
         });
         //actualiza al usuario para vincularle el ticket
         const userId = req.user._id;
         await User.updateUserTicket(userId, response._id);
         return response
-          ? res.status(200).send({ status: "success", data: response })
+          ? res.status(200).send({
+              status: "success",
+              message: "Compra realizada con éxito",
+              data: {
+                ...response._doc,
+                remainingProducts,
+                updatedStockProducts,
+              },
+            })
           : res.status(500).send({ status: "error", data: response });
       } else {
-        return res.status(400).send({
+        return res.status(200).send({
           status: "error",
-          message: "No hay stock alguno para procesar la compra",
+          message: "No hay stock en ningún producto para procesar la compra",
+          data: { remainingProducts },
         });
       }
     } catch (err) {

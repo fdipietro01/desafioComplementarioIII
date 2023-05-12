@@ -66,7 +66,10 @@ class CartMaganer {
 
   updateProductsFromCart = async (cid, productos) => {
     try {
-      await this.model.findOneAndUpdate({ _id: cid }, { productos });
+      await this.model.findOneAndUpdate(
+        { _id: cid },
+        { productos: productos.length ? productos : [] }
+      );
     } catch (err) {
       console.log(err);
       throw new Error("Error al actualizar colección productos", err.message);
