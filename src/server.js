@@ -1,10 +1,10 @@
-const config = require("./config/config");
 const router = require("./routes/index");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const initializePassport = require("./middlewares/passportMiddleware");
 const cors = require("cors");
+const { Server } = require("socket.io");
 
 const app = express();
 
@@ -27,6 +27,14 @@ initializePassport();
 //setting router
 app.use("/", router);
 
-app.listen(process.env.PORT, () => {
+const httpServer = app.listen(process.env.PORT, () => {
   console.log("Servidor corriendo en puerto", process.env.PORT);
 });
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173",
+  },
+});
+
+app.set("socketio", io);

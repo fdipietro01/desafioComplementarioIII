@@ -4,6 +4,7 @@ let UserDao;
 let CartDao;
 let SessionDao;
 let TicketDao;
+let ChatDao;
 
 switch (config.persistence) {
   case "MONGO":
@@ -13,6 +14,7 @@ switch (config.persistence) {
     CartDao = require("./mongoDaos/CartManager");
     SessionDao = require("./mongoDaos/UsersManager");
     TicketDao = require("./mongoDaos/TicketManager");
+    ChatDao = require("./mongoDaos/ChatManager");
     break;
   case "MEMORY":
     ProductDao = require("./fsDaos/ProductManager");
@@ -20,6 +22,7 @@ switch (config.persistence) {
     CartDao = require("./fsDaos/CartManager");
     SessionDao = require("./fsDaos/UserManager");
     TicketDao = require("./fsDaos/TicketManager");
+    ChatDao = require("./fsDaos/ChatManager");
     break;
 }
 
@@ -29,4 +32,5 @@ module.exports = {
   CartDao,
   SessionDao,
   TicketDao,
+  ChatDao,
 };
